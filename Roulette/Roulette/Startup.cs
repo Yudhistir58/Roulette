@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Roulette.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +29,13 @@ namespace Roulette
         {
 
             services.AddControllers();
+            services.AddServices();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Roulette", Version = "v1" });
             });
+
+            services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
