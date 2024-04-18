@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Roulette.Repositories;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -12,15 +13,18 @@ namespace Roulette.Controllers
     public class BetController : Controller
     {
         private readonly IBetRepository _betRepository;
+        private readonly ILogger<BetController> _logger;
 
-        public BetController(IBetRepository betRepository)
+        public BetController(IBetRepository betRepository, ILogger<BetController> logger)
         {
             _betRepository = betRepository;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult> RetrieveAllAsync()
         {
+            _logger.LogInformation("Retriving all Bets");
             var bets = await _betRepository.RetrieveAllAsync();
             return Ok(bets);
         }
