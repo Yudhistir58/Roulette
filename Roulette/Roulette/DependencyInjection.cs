@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Roulette.Repositories;
+using Roulette.Services;
 
 namespace Roulette
 {
@@ -11,6 +12,7 @@ namespace Roulette
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IPlayerBetRepository, PlayerBetRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
+            services.AddScoped<IResultService, ResultService>();
             return services;
         }
     }

@@ -2,6 +2,7 @@
 using Roulette.Repositories;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading.Tasks;
+using Roulette.Services;
 
 namespace Roulette.Controllers
 {
@@ -12,10 +13,12 @@ namespace Roulette.Controllers
     public class ResultController : Controller
     {
         private readonly IResultRepository _resultRepository;
+        private readonly IResultService _resultService;
 
-        public ResultController(IResultRepository resultRepository)
+        public ResultController(IResultRepository resultRepository, IResultService resultService)
         {
             _resultRepository = resultRepository;
+            _resultService = resultService;
         }
 
         [HttpGet]
@@ -23,6 +26,25 @@ namespace Roulette.Controllers
         {
             var results = await _resultRepository.RetrieveAllAsync();
             return Ok(results);
+        }
+
+        [HttpGet("{resultId:int}")]
+        [ActionName(nameof(RetrieveResultAsync))]
+        public async Task<ActionResult> RetrieveResultAsync(int resultId)
+        {
+            var results = await _resultRepository.RetrieveResultAsync(resultId);
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GenerateNewResultAsync()
+        {
+            var newResult = await _resultService.GenerateNewResultAsync();
+            if (newResult is null)
+            {
+                return BadRequest();
+            }
+            return Ok(newResult);
         }
     }
 }
