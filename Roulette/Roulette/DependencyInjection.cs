@@ -10,6 +10,7 @@ namespace Roulette
             services.AddScoped<IBetRepository, BetRepository>();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IPlayerBetRepository, PlayerBetRepository>();
+            services.AddScoped<IResultRepository, ResultRepository>();
             return services;
         }
     }
