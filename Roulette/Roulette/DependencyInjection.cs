@@ -8,6 +8,7 @@ namespace Roulette
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IBetRepository, BetRepository>();
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
             return services;
         }
     }

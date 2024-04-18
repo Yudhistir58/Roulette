@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Roulette.Repositories;
-using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
 
 namespace Roulette.Controllers
 {
@@ -9,20 +9,20 @@ namespace Roulette.Controllers
     [Route("api/[controller]")]
     [Consumes(Application.Json)]
     [Produces(Application.Json)]
-    public class BetController : Controller
+    public class PlayerController : Controller
     {
-        private readonly IBetRepository _betRepository;
+        private readonly IPlayerRepository _playerRepository;
 
-        public BetController(IBetRepository betRepository)
+        public PlayerController(IPlayerRepository playerRepository)
         {
-            _betRepository = betRepository;
+            _playerRepository = playerRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult> RetrieveAllAsync()
         {
-            var bets = await _betRepository.RetrieveAllAsync();
-            return Ok(bets);
+            var players = await _playerRepository.RetrieveAllAsync();
+            return Ok(players);
         }
     }
 }
