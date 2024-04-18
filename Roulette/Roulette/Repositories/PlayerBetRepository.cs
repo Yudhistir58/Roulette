@@ -64,9 +64,11 @@ namespace Roulette.Repositories
             {
                 var param = new DynamicParameters();
                 param.Add("@playerBetId", playerBet.PlayerBetId);
+                param.Add("@amount", playerBet.Amount);
+                param.Add("@status", playerBet.Status);
                 param.Add("@payoutValue", playerBet.PayoutValue);
                 param.Add("@resultId", playerBet.ResultId);
-                await sqlConnection.ExecuteAsync(sql: "update playerbet set payoutValue = @payoutValue, resultId = @resultId where playerbetId = @playerBetId", param);
+                await sqlConnection.ExecuteAsync(sql: "update playerbet set amount = @amount, status = @status, payoutValue = @payoutValue, resultId = @resultId where playerbetId = @playerBetId", param);
                 return true;
             }
             catch (Exception ex)
