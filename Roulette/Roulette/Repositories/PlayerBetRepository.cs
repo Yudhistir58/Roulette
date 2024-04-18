@@ -35,5 +35,44 @@ namespace Roulette.Repositories
             }
             return playerBets;
         }
+
+        public async Task<List<PlayerBetModel>> RetrievePlayerBetAsync(int playerBetId)
+        {
+            using var sqlConnection = new SqliteConnection(_connectionStrings.Value.RouletteDb);
+
+            var playerBets = new List<PlayerBetModel>();
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@playerBetId", playerBetId);
+                playerBets = (await sqlConnection.QueryAsync<PlayerBetModel>
+                    (sql: "Select * from playerbet where playerbetId = @playerBetId", param)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return playerBets;
+        }
+
+        public async Task<bool> UpdatePlayerBetAsync(PlayerBetModel playerBet)
+        {
+            using var sqlConnection = new SqliteConnection(_connectionStrings.Value.RouletteDb);
+
+            var playerBets = new List<PlayerBetModel>();
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@playerBetId", playerBet.PlayerBetId);
+                param.Add("@payoutValue", playerBet.PayoutValue);
+                param.Add("@resultId", playerBet.ResultId);
+                await sqlConnection.ExecuteAsync(sql: "update playerbet set payoutValue = @payoutValue, resultId = @resultId where playerbetId = @playerBetId", param);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
