@@ -22,11 +22,16 @@ namespace Roulette.Services
         public async Task<ResultModel> GenerateNewResultAsync()
         {
             _logger.LogInformation("Generating spin result");
-            Random random = new Random();
-            var spinValue = random.Next(0, 37);
+            var spinValue = GetRandomSpinValue();
             var newResult = new ResultModel() { ResultValue = spinValue, ResultTime = DateTime.Now };
             var createdResult = await _resultRepository.GenerateNewResultAsync(newResult);
             return createdResult;
+        }
+
+        public int GetRandomSpinValue()
+        {
+            Random random = new Random();
+            return random.Next(0, 37);
         }
     }
 }
