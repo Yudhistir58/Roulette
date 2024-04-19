@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Roulette.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Xunit;
 
 namespace Roulette.Services
 {
@@ -33,7 +34,7 @@ namespace Roulette.Services
             var playerBet = (await _playerBetRepository.RetrievePlayerBetAsync(playerBetId)).FirstOrDefault();
             var bet = (await _betRepository.RetrieveBetAsync(playerBet.BetId)).FirstOrDefault();
             var win = false;
-            if (result != null && playerBet != null && bet != null) 
+            if (result != null && playerBet != null && bet != null)
             {
                 win = CheckWinner(result.ResultValue, bet.Number, bet.BetType);
             }
@@ -47,15 +48,15 @@ namespace Roulette.Services
             switch (betType)
             {
                 case "Number":
-                    return number == resultValue;                    
+                    return number == resultValue;
                 case "Odd":
-                    return (resultValue % 2) == 1;                    
+                    return (resultValue % 2) == 1;
                 case "Even":
-                    return (resultValue % 2) == 0;                    
+                    return (resultValue % 2) == 0;
                 case "Red":
-                    return _redValues.Any(x => x.Equals(resultValue));                   
+                    return _redValues.Any(x => x.Equals(resultValue));
                 case "Black":
-                    return _blackValues.Any(x => x.Equals(resultValue));                   
+                    return _blackValues.Any(x => x.Equals(resultValue));
                 case "FirstColumn":
                     return (resultValue % 3) == 1;
                 case "SecondColumn":
@@ -72,9 +73,25 @@ namespace Roulette.Services
                     return resultValue <= 18;
                 case "SecondHalf":
                     return resultValue <= 36 && resultValue > 18;
-                default: 
+                default:
                     return false;
             }
+        }
+
+        [Theory]
+        [InlineData(1, 1, "number", true)]
+        [InlineData(1, 1, "Odd", true)]
+        [InlineData(2, 0, "Odd", false)]
+        [InlineData(2, 0, "Black", true)]
+        [InlineData(2, 0, "Red", false)]
+        [InlineData(2, 0, "FirstDozen", true)]
+        [InlineData(2, 0, "FirstHalf", true)]
+        [InlineData(35, 0, "FirstHalf", false)]
+        [InlineData(15, 0, "SecondDozen", true)]
+        [InlineData(15, 0, "ThirdColumn", true)]
+        public void CheckWinnerTest(int resultValue, int number, string betType, bool win)
+        {
+            Assert.Equal(win, CheckWinner(resultValue, number, betType));
         }
     }
 }

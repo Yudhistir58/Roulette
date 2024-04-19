@@ -5,6 +5,7 @@ using Roulette.Models;
 using Roulette.Repositories;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Roulette.Services
 {
@@ -28,10 +29,17 @@ namespace Roulette.Services
             return createdResult;
         }
 
-        public int GetRandomSpinValue()
+        private int GetRandomSpinValue()
         {
             Random random = new Random();
             return random.Next(0, 37);
+        }
+
+        [Fact]
+        public void GetRandomSpinValueTest()
+        {
+            var spinValue = GetRandomSpinValue();
+            Assert.True(spinValue >= 0 && spinValue <= 36);
         }
     }
 }
