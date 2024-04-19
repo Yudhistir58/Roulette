@@ -7,5 +7,6 @@ namespace Roulette.Repositories
     public interface IBetRepository
     {
         Task<List<BetModel>> RetrieveAllAsync();
+        Task<List<BetModel>> RetrieveBetAsync(int betId);
     }
 }
