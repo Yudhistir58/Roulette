@@ -7,7 +7,7 @@
         public int BetId { get; set; }
         public decimal Amount { get; set; }
         public string Status { get; set; }
-        public  decimal Payout { get; set; }
+        public  decimal PayoutValue { get; set; }
         public int ResultId { get; set; }
 
     }
