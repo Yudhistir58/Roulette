@@ -4,6 +4,8 @@ using System;
 using Roulette.Repositories;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Roulette.Controllers;
 
 namespace Roulette.Services
 {
@@ -12,16 +14,20 @@ namespace Roulette.Services
         private readonly IResultRepository _resultRepository;
         private readonly IPlayerBetRepository _playerBetRepository;
         private readonly IBetRepository _betRepository;
+        private readonly ILogger<BetController> _logger;
         private readonly List<int> _redValues = new List<int>() { 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 };
         private readonly List<int> _blackValues = new List<int>() { 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35 };
-        public PlayerBetService(IPlayerBetRepository playerBetRepository, IResultRepository resultRepository, IBetRepository betRepository)
+
+        public PlayerBetService(IPlayerBetRepository playerBetRepository, IResultRepository resultRepository, IBetRepository betRepository, ILogger<BetController> logger)
         {
             _playerBetRepository = playerBetRepository;
             _resultRepository = resultRepository;
             _betRepository = betRepository;
+            _logger = logger;
         }
         public async Task<PlayerBetModel> GetPlayerBetResultAsync(int playerBetId, int resultId)
         {
+            _logger.LogInformation("Calculating win or loss and payout");
             var result = (await _resultRepository.RetrieveResultAsync(resultId)).FirstOrDefault();
             var playerBet = (await _playerBetRepository.RetrievePlayerBetAsync(playerBetId)).FirstOrDefault();
             var bet = (await _betRepository.RetrieveBetAsync(playerBet.BetId)).FirstOrDefault();

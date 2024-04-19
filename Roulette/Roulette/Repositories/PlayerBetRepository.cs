@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 using System;
 using Dapper;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Roulette.Controllers;
 
 namespace Roulette.Repositories
 {
     public class PlayerBetRepository : IPlayerBetRepository
     {
         private readonly IOptionsSnapshot<ConnectionStringOptions> _connectionStrings;
+        private readonly ILogger<BetController> _logger;
 
-        public PlayerBetRepository(IOptionsSnapshot<ConnectionStringOptions> connectionStrings)
+        public PlayerBetRepository(IOptionsSnapshot<ConnectionStringOptions> connectionStrings, ILogger<BetController> logger)
         {
             _connectionStrings = connectionStrings;
+            _logger = logger;
         }
 
         public async Task<List<PlayerBetModel>> RetrieveAllAsync()
@@ -26,12 +30,13 @@ namespace Roulette.Repositories
             var playerBets = new List<PlayerBetModel>();
             try
             {
+                _logger.LogInformation("Attempting RetrieveAllAsync");
                 playerBets = (await sqlConnection.QueryAsync<PlayerBetModel>
                     (sql: "Select * from PlayerBet")).ToList();
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogInformation($"RetrieveAllAsync - {ex}");
             }
             return playerBets;
         }
@@ -43,6 +48,7 @@ namespace Roulette.Repositories
             var playerBets = new List<PlayerBetModel>();
             try
             {
+                _logger.LogInformation("Attempting RetrievePlayerBetAsync");
                 var param = new DynamicParameters();
                 param.Add("@playerBetId", playerBetId);
                 playerBets = (await sqlConnection.QueryAsync<PlayerBetModel>
@@ -50,7 +56,7 @@ namespace Roulette.Repositories
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogInformation($"RetrievePlayerBetAsync - {ex}");
             }
             return playerBets;
         }
@@ -62,6 +68,7 @@ namespace Roulette.Repositories
             var playerBets = new List<PlayerBetModel>();
             try
             {
+                _logger.LogInformation("Attempting UpdatePlayerBetAsync");
                 var param = new DynamicParameters();
                 param.Add("@playerBetId", playerBet.PlayerBetId);
                 param.Add("@amount", playerBet.Amount);
@@ -73,6 +80,7 @@ namespace Roulette.Repositories
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"UpdatePlayerBetAsync - {ex}");
                 return false;
             }
         }
@@ -84,6 +92,7 @@ namespace Roulette.Repositories
             var playerBets = new List<PlayerBetModel>();
             try
             {
+                _logger.LogInformation("Attempting UpdatePlayerBetResultAsync");
                 var param = new DynamicParameters();
                 param.Add("@playerBetId", playerBet.PlayerBetId);
                 param.Add("@amount", playerBet.Amount);
@@ -95,6 +104,7 @@ namespace Roulette.Repositories
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"UpdatePlayerBetResultAsync - {ex}");
                 return false;
             }
         }

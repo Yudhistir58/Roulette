@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 using System;
 using Dapper;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Roulette.Controllers;
 
 namespace Roulette.Repositories
 {
     public class PlayerRepository : IPlayerRepository
     {
         private readonly IOptionsSnapshot<ConnectionStringOptions> _connectionStrings;
+        private readonly ILogger<BetController> _logger;
 
-        public PlayerRepository(IOptionsSnapshot<ConnectionStringOptions> connectionStrings)
+        public PlayerRepository(IOptionsSnapshot<ConnectionStringOptions> connectionStrings, ILogger<BetController> logger)
         {
             _connectionStrings = connectionStrings;
+            _logger = logger;
         }
 
         public async Task<List<PlayerModel>> RetrieveAllAsync()
@@ -26,12 +30,13 @@ namespace Roulette.Repositories
             var players = new List<PlayerModel>();
             try
             {
+                _logger.LogInformation("Attempting RetrieveAllAsync");
                 players = (await sqlConnection.QueryAsync<PlayerModel>
                     (sql: "Select * from player")).ToList();
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogInformation($"RetrieveAllAsync - {ex}");
             }
             return players;
         }

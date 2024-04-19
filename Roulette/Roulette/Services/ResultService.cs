@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Roulette.Controllers;
 using Roulette.Models;
 using Roulette.Repositories;
 using System;
@@ -9,17 +11,20 @@ namespace Roulette.Services
     public class ResultService : IResultService
     {
         private readonly IResultRepository _resultRepository;
+        private readonly ILogger<BetController> _logger;
 
-        public ResultService(IResultRepository resultRepository)
+        public ResultService(IResultRepository resultRepository, ILogger<BetController> logger)
         {
             _resultRepository = resultRepository;
+            _logger = logger;
         }
 
         public async Task<ResultModel> GenerateNewResultAsync()
         {
+            _logger.LogInformation("Generating spin result");
             Random random = new Random();
             var spinValue = random.Next(0, 37);
-            var newResult = new ResultModel() { ResultValue = spinValue, ResultTime = DateTime.Now };
+            var newResult = new ResultModel() { ResultValue = spinValue, ResultTime = DateTime.Now };          
             var createdResult = await _resultRepository.GenerateNewResultAsync(newResult);
             return createdResult;
         }

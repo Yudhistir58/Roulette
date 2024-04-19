@@ -3,6 +3,7 @@ using Roulette.Repositories;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading.Tasks;
 using Roulette.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Roulette.Controllers
 {
@@ -14,16 +15,20 @@ namespace Roulette.Controllers
     {
         private readonly IResultRepository _resultRepository;
         private readonly IResultService _resultService;
+        private readonly ILogger<BetController> _logger;
 
-        public ResultController(IResultRepository resultRepository, IResultService resultService)
+
+        public ResultController(IResultRepository resultRepository, IResultService resultService, ILogger<BetController> logger)
         {
             _resultRepository = resultRepository;
             _resultService = resultService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult> RetrieveAllAsync()
         {
+            _logger.LogInformation("Retriving all Results");
             var results = await _resultRepository.RetrieveAllAsync();
             return Ok(results);
         }
@@ -32,6 +37,7 @@ namespace Roulette.Controllers
         [ActionName(nameof(RetrieveResultAsync))]
         public async Task<ActionResult> RetrieveResultAsync(int resultId)
         {
+            _logger.LogInformation("Retriving Specific Result");
             var results = await _resultRepository.RetrieveResultAsync(resultId);
             return Ok(results);
         }
@@ -39,6 +45,7 @@ namespace Roulette.Controllers
         [HttpPost]
         public async Task<ActionResult> GenerateNewResultAsync()
         {
+            _logger.LogInformation("Generating new Result");
             var newResult = await _resultService.GenerateNewResultAsync();
             if (newResult is null)
             {
