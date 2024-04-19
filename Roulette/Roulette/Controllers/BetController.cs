@@ -28,5 +28,13 @@ namespace Roulette.Controllers
             var bets = await _betRepository.RetrieveAllAsync();
             return Ok(bets);
         }
+
+        [HttpGet("betId:int")]
+        public async Task<ActionResult> RetrieveBetAsync(int betId)
+        {
+            _logger.LogInformation("Retriving specific Bet");
+            var bets = await _betRepository.RetrieveBetAsync(betId);
+            return Ok(bets);
+        }
     }
 }

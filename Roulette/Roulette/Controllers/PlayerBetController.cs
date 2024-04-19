@@ -3,6 +3,7 @@ using Roulette.Repositories;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading.Tasks;
 using Roulette.Models;
+using Roulette.Services;
 
 namespace Roulette.Controllers
 {
@@ -13,10 +14,12 @@ namespace Roulette.Controllers
     public class PlayerBetController : Controller
     {
         private readonly IPlayerBetRepository _playerBetRepository;
+        private readonly IPlayerBetService _playerBetService;
 
-        public PlayerBetController(IPlayerBetRepository playerBetRepository)
+        public PlayerBetController(IPlayerBetRepository playerBetRepository, IPlayerBetService playerBetService)
         {
             _playerBetRepository = playerBetRepository;
+            _playerBetService = playerBetService;
         }
 
         [HttpGet]
@@ -52,6 +55,13 @@ namespace Roulette.Controllers
 
             var succeeded = await _playerBetRepository.UpdatePlayerBetAsync(playerBet);
             return succeeded ? NoContent() : BadRequest();
+        }
+
+        [HttpGet("{playerBetId:int}/{resultId:int}")]
+        public async Task<PlayerBetModel> GetPlayerBetResultAsync(int playerBetId, int resultId)
+        {
+            var playerBet = await _playerBetService.GetPlayerBetResultAsync(playerBetId, resultId);
+            return playerBet;
         }
     }
 }

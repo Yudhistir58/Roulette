@@ -35,5 +35,24 @@ namespace Roulette.Repositories
             }
             return bets;
         }
+
+        public async Task<List<BetModel>> RetrieveBetAsync(int betId)
+        {
+            using var sqlConnection = new SqliteConnection(_connectionStrings.Value.RouletteDb);
+
+            var bets = new List<BetModel>();
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@betId", betId);
+                bets = (await sqlConnection.QueryAsync<BetModel>
+                    (sql: "Select * from bet where betId = @betId", param)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return bets;
+        }
     }
 }

@@ -76,5 +76,27 @@ namespace Roulette.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> UpdatePlayerBetResultAsync(PlayerBetModel playerBet)
+        {
+            using var sqlConnection = new SqliteConnection(_connectionStrings.Value.RouletteDb);
+
+            var playerBets = new List<PlayerBetModel>();
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@playerBetId", playerBet.PlayerBetId);
+                param.Add("@amount", playerBet.Amount);
+                param.Add("@status", playerBet.Status);
+                param.Add("@payoutValue", playerBet.PayoutValue);
+                param.Add("@resultId", playerBet.ResultId);
+                await sqlConnection.ExecuteAsync(sql: "update playerbet set amount = @amount, status = @status, payoutValue = @payoutValue, resultId = @resultId where playerbetId = @playerBetId", param);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
