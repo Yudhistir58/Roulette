@@ -6,6 +6,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Roulette.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Xunit;
 
 namespace Roulette.Services
 {
@@ -32,52 +34,64 @@ namespace Roulette.Services
             var playerBet = (await _playerBetRepository.RetrievePlayerBetAsync(playerBetId)).FirstOrDefault();
             var bet = (await _betRepository.RetrieveBetAsync(playerBet.BetId)).FirstOrDefault();
             var win = false;
-            if (result != null && playerBet != null && bet != null) 
+            if (result != null && playerBet != null && bet != null)
             {
-                switch (bet.BetType) 
-                {
-                    case "Number": win = bet.Number == result.ResultValue;
-                        break;
-                    case "Odd": win = (result.ResultValue % 2) == 1; 
-                        break;
-                    case "Even":
-                        win = (result.ResultValue % 2) == 0;
-                        break;
-                    case "Red":
-                        win = _redValues.Any(x=> x.Equals(result.ResultValue));
-                        break;
-                    case "Black":
-                        win = _blackValues.Any(x => x.Equals(result.ResultValue));
-                        break;
-                    case "FirstColumn":
-                        win = (result.ResultValue % 3) == 1;
-                        break;
-                    case "SecondColumn":
-                        win = (result.ResultValue % 3) == 2;
-                        break;
-                    case "ThirdColumn":
-                        win = (result.ResultValue % 3) == 0;
-                        break;
-                    case "FirstDozen":
-                        win = result.ResultValue <= 12;
-                        break;
-                    case "SecondDozen":
-                        win = result.ResultValue <= 24 && result.ResultValue >12;
-                        break;
-                    case "ThirdDozen":
-                        win = result.ResultValue <= 36 && result.ResultValue > 24;
-                        break;
-                    case "FirstHalf":
-                        win = result.ResultValue <= 18;
-                        break;
-                    case "SecondHalf":
-                        win = result.ResultValue <= 36 && result.ResultValue > 18;
-                        break;
-                }
+                win = CheckWinner(result.ResultValue, bet.Number, bet.BetType);
             }
-            playerBet.ResultId = result.ResultId;
+            playerBet.ResultId = resultId;
             playerBet.PayoutValue = win ? playerBet.Amount * bet.Multiplier : 0;
             return playerBet;
+        }
+
+        private bool CheckWinner(int resultValue, int number, string betType)
+        {
+            switch (betType)
+            {
+                case "Number":
+                    return number == resultValue;
+                case "Odd":
+                    return (resultValue % 2) == 1;
+                case "Even":
+                    return (resultValue % 2) == 0;
+                case "Red":
+                    return _redValues.Any(x => x.Equals(resultValue));
+                case "Black":
+                    return _blackValues.Any(x => x.Equals(resultValue));
+                case "FirstColumn":
+                    return (resultValue % 3) == 1;
+                case "SecondColumn":
+                    return (resultValue % 3) == 2;
+                case "ThirdColumn":
+                    return (resultValue % 3) == 0;
+                case "FirstDozen":
+                    return resultValue <= 12;
+                case "SecondDozen":
+                    return resultValue <= 24 && resultValue > 12;
+                case "ThirdDozen":
+                    return resultValue <= 36 && resultValue > 24;
+                case "FirstHalf":
+                    return resultValue <= 18;
+                case "SecondHalf":
+                    return resultValue <= 36 && resultValue > 18;
+                default:
+                    return false;
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 1, "number", true)]
+        [InlineData(1, 1, "Odd", true)]
+        [InlineData(2, 0, "Odd", false)]
+        [InlineData(2, 0, "Black", true)]
+        [InlineData(2, 0, "Red", false)]
+        [InlineData(2, 0, "FirstDozen", true)]
+        [InlineData(2, 0, "FirstHalf", true)]
+        [InlineData(35, 0, "FirstHalf", false)]
+        [InlineData(15, 0, "SecondDozen", true)]
+        [InlineData(15, 0, "ThirdColumn", true)]
+        public void CheckWinnerTest(int resultValue, int number, string betType, bool win)
+        {
+            Assert.Equal(win, CheckWinner(resultValue, number, betType));
         }
     }
 }
