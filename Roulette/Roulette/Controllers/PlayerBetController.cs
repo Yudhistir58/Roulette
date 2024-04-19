@@ -69,5 +69,17 @@ namespace Roulette.Controllers
             var playerBet = await _playerBetService.GetPlayerBetResultAsync(playerBetId, resultId);
             return playerBet;
         }
+
+        [HttpPost]
+        public async Task<ActionResult> PlaceNewPlayerBetAsync(PlayerBetModel playerBet)
+        {
+            _logger.LogInformation("Generating new Result");
+            var newPlayerBet = await _playerBetRepository.PlaceNewPlayerBetAsync(playerBet);
+            if (newPlayerBet is null)
+            {
+                return BadRequest();
+            }
+            return Ok(newPlayerBet);
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Roulette.Services
             _logger.LogInformation("Generating spin result");
             Random random = new Random();
             var spinValue = random.Next(0, 37);
-            var newResult = new ResultModel() { ResultValue = spinValue, ResultTime = DateTime.Now };          
+            var newResult = new ResultModel() { ResultValue = spinValue, ResultTime = DateTime.Now };
             var createdResult = await _resultRepository.GenerateNewResultAsync(newResult);
             return createdResult;
         }

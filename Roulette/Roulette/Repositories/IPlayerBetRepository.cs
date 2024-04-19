@@ -9,5 +9,6 @@ namespace Roulette.Repositories
         Task<List<PlayerBetModel>> RetrieveAllAsync();
         Task<List<PlayerBetModel>> RetrievePlayerBetAsync(int playerBetId);
         Task<bool> UpdatePlayerBetAsync(PlayerBetModel playerBet);
+        Task<PlayerBetModel> PlaceNewPlayerBetAsync(PlayerBetModel playerBet);
     }
 }

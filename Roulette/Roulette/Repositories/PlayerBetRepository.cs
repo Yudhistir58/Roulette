@@ -108,5 +108,28 @@ namespace Roulette.Repositories
                 return false;
             }
         }
+        public async Task<PlayerBetModel> PlaceNewPlayerBetAsync(PlayerBetModel playerBet)
+        {
+            using var sqlConnection = new SqliteConnection(_connectionStrings.Value.RouletteDb);
+            var newPlayerBet = new List<PlayerBetModel>();
+            try
+            {
+                _logger.LogInformation("Attempting PlaceNewPlayerBetAsync");
+                var param = new DynamicParameters();
+                param.Add("@playerId", playerBet.PlayerId);
+                param.Add("@betId", playerBet.BetId);
+                param.Add("@amount", playerBet.Amount);
+                param.Add("@status", playerBet.Status);
+                await sqlConnection.ExecuteAsync(sql: "Insert into playerBet (playerId, betId, amount, status) values (@playerId, @betId, @amount, @status)", param);
+
+                newPlayerBet = (await sqlConnection.QueryAsync<PlayerBetModel>(sql: "SELECT last_insert_rowid() as 'PlayerBetId'")).ToList();
+                playerBet.PlayerBetId = newPlayerBet.Select(r => r.PlayerBetId).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"PlaceNewPlayerBetAsync - {ex}");
+            }
+            return playerBet;
+        }
     }
 }
